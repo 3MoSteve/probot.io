@@ -37,30 +37,6 @@ class ProBot extends EventEmitter {
   }
 
   /**
-   * @param {String} googleRaptcha Your Captcha Response
-   */
-  claimDaily(captcha, { host = "", port = "0000", protocol = "https", username = null, password = null } = {}) {
-    const proxy = {};
-    if (host && port) {
-      proxy.host = host;
-      proxy.port = port;
-    }
-    if (username && password) {
-      proxy.auth = { username, password };
-    }
-    if (Object.keys(proxy) > 0) proxy.protocol = protocol;
-
-    return new Promise((resolve, reject) => {
-      const obj = Object.keys(proxy) > 0 ? { proxy } : {};
-      axios.post("/claim_daily", { captcha }, obj).then(res => {
-        resolve(res.data);
-      }).catch(e => {
-        reject(e?.response?.data);
-      });
-    });
-  }
-
-  /**
    * @description Request the new User Details and guilds.
    * @returns {Promise<UserData>}
    */
@@ -101,6 +77,93 @@ class ProBot extends EventEmitter {
   }
 
   /**
+   * @description Get All profile backgrounds from the Probot.io store
+   * @returns {Promise<Array<Profilebackground>>}
+   */
+  async getProfileBackgrounds() {
+    const data = (await axios.get("/bg?store=profile")).data;
+    const bgs = data.map(back => {
+      back.owned = (back.ownerid ? true : false);
+      delete back.ownerid;
+      return back;
+    });
+    return Promise.resolve(bgs);
+  }
+
+  /**
+   * @description Get All Badges from the ProBot.io store
+   * @returns {Promise<Array<ProfileBadges>}
+   */
+  async getBadges() {
+    const data = (await axios.get("/badges")).data;
+    return Promise.resolve(data);
+  }
+
+  /**
+   * @param {Number} id Profile background ID
+   * @param {Boolean} withColor If you want to use the Colors in the background
+   */
+  async buyProfilebackground(id, withColor = false) {
+    return new Promise((resolve, reject) => {
+      axios.post("/buyanduse", {
+        Number: id,
+        nocolor: !withColor,
+        store: "profile",
+        type: "profile"
+      }).then(async res => {
+        await this.refresh(); // Refresh the user details.
+        resolve(res.data.status === "success" ? `Successfully bought and used the profile background${(withColor ? " with colors" : "")}.` : `Successfully set the profile background with ID ${id} in use.`);
+      }).catch(e => {
+        reject(e?.response?.data);
+      });
+    });
+  }
+
+  /**
+   * @param {Number} id Badge ID
+   * @param {Boolean} select Add the badge on your Profile after purchasing it or no.
+   */
+  async buyBadge(id, select = false) {
+    return new Promise((resolve, reject) => {
+      axios.post("/buyanduse", {
+        Number: id,
+        Selected: (select ? 1 : 0),
+        type: "badges"
+      }).then(res => {
+        resolve(res.data.status === "success" ? `Successfully bought${(select ? " and used " : " ")}the badge.` : `Successfully set the badge with ID ${id} in use.`);
+      }).catch(e => {
+        reject(e?.response?.data);
+      });
+    });
+  }
+
+  /**
+   * @description Get the Top 100 by XP users on ProBot
+   * @returns {Promise<Array<XPUserData>>}
+   */
+  async getTop100XP() {
+    let data = (await axios.get("/top_xp")).data;
+    data = data.map(user => {
+      user.tag = `${user.name}#${user.discriminator}`;
+      return user;
+    });
+    return Promise.resolve(data);
+  }
+
+  /**
+   * @description Get the Top 100 by credits users on ProBot
+   * @returns {Promise<Array<CreditUserData>>}
+   */
+  async getTopBillionaires() {
+    let data = (await axios.get("/top_credits")).data;
+    data = data.map(user => {
+      user.tag = `${user.name}#${user.discriminator}`;
+      return user;
+    });
+    return Promise.resolve(data);
+  }
+
+  /**
    * @param {Boolean} all Logout From All Devices or no.
    * @description Logout From The ProBot Dashboard and the token will not work anymore.
    */
@@ -108,7 +171,7 @@ class ProBot extends EventEmitter {
     if (typeof all != "boolean") {
       all = Boolean(all);
     }
-    axios.get(`/logout${(all ? "?all=1" : "")}`).then(() => {
+    axios.get(`/logout?all=${(all ? "1" : "0")}`).then(() => {
       // eslint-disable-next-line no-multi-assign
       this.token = this.type = undefined;
     }).catch(e => {
@@ -119,6 +182,44 @@ class ProBot extends EventEmitter {
 }
 
 module.exports = ProBot;
+
+/**
+ * @typedef CreditUserData
+ * @property {String} name
+ * @property {String} discriminator
+ * @property {String} tag
+ * @property {Number} credits
+ */
+
+/**
+ * @typedef XPUserData
+ * @property {String} name
+ * @property {String} discriminator
+ * @property {String} tag
+ * @property {Number} xp
+ * @property {Number} level
+ * @property {String} avatar
+ */
+
+/**
+ * @typedef ProfileBadges
+ * @property {String} category
+ * @property {String} filename
+ * @property {Number} hidden
+ * @property {Number} id
+ * @property {Number} price
+ * @property {Boolean} owned
+ */
+
+/**
+ * @typedef Profilebackground
+ * @property {String} category
+ * @property {String} filename
+ * @property {Number} hidden
+ * @property {Boolean} owned
+ * @property {Number} price
+ * @property {String} store
+ */
 
 /**
  * @typedef Transactions

@@ -1,19 +1,21 @@
 # ProBot.io Package
-<h1>
-I made this package to make it easier for the people to claim the daily in ProBot.
-In the new version i will make the package support capMonster and AntiCaptcha services
-To make it more easier :)
-All you have to do just add your tokens, proxies and the package will start claiming the daily in all Accounts.
-</h1>
 
-# Current Added Features
+# Current Available Features
 
 <table>
   <ul>
     <li>User Details</li>
     <li>Guilds Details</li>
     <li>Transaction Logs</li>
-    <li>Claim Daily <strong style="color: lime">Supports Proxies</strong></li>
+    <li>Logout</li>
+    <li>Get All available Profile backgrounds on the store</li>
+    <li>Get All available Badges on the store</li>
+    <li>Buy A new Profile backgrounds by ID</li>
+    <li>Buy A new Badge By ID</li>
+    <li>Tax Calculator</li>
+    <li>Get the top 100 by XP</li>
+    <li>Get the top 100 by credits</li>
+    
   </ul>
 </table>
 
@@ -23,11 +25,10 @@ All you have to do just add your tokens, proxies and the package will start clai
 npm install probot.io
 ```
 
-
 # Usage
 
 ```js
-const { ProClient } = require("probot.io");
+const { ProClient, tax } = require("probot.io");
 const pro = new ProClient("0IxW0YE5Z7cg8Hw", "probot");
 // Or Login with your Discord Token
  const pro = new ProClient("Your Discord Account Token", "discord");
@@ -41,49 +42,61 @@ pro.on("ready", () => { // When the Client is ready.
 ```
 
 # Claim The Daily 
-<table>
-  <tr>
-    <th>Param</th>
-    <th>Type</th>
-    <th>Required</th>
-    <th>Description</th>
-    
-  </tr>
-  <tr>
-    <td>Captcha</td>
-    <td>String</td>
-    <td>Yes</td>
-    <td>Google ReCaptcha response code</td>
-  </tr>
-  <tr>
-    <td>Proxy Options</td>
-    <td>Object</td>
-    <td>False</td>
-    <td>Proxy Options</td>
-    <td>host: required<br />port: required<br />protocol: Optional(Default: https)<br />username: Optional<br />password: Optional<br /></td>
-  </tr>
-</table>
+<h1 style="color: red">Removed</h1>
 
-## Without Proxy
+
+# Get all available badges or profile backgrounds
 ```js
-pro.claimDaily("google reCaptcha Response").then(response => {
-  console.log(response);
+client.getProfileBackgrounds().then(profiles => {
+  console.log(profiles)
 }).catch(e => {
-  console.log(e);
-});
+  console.error(e);
+}); //Get all available profile backgrounds
+
+client.getBadges().then(badges => {
+  console.log(badges);
+}).catch(e => {
+  cosnole.error(e);
+}); //get All available badges
+
 ```
 
-## With Proxy
+# Buy a badge or profile background
 ```js
-pro.claimDaily("google reCaptcha Response", {
-  protocol: "https",
-  host: "127.0.0.1",
-  port: "8080",
-  username: "Steve123", //Optional
-  password: "MyPassword123$$"
-}).then(response => {
-  console.log(response);
+client.buyProfilebackground(Number, Boolean).then(msg => {
+  console.log(msg);
 }).catch(e => {
-  console.log(e);
-});
+  console.error(e);
+}); //Buy a profile background By ID.
+
+client.buyBadge(Number, Boolean).then(msg => {
+  console.log(msg);
+}).catch(e => {
+  console.error(e);
+}); //Buy a badge By ID.
+
+```
+
+# Tax Calculator
+```js
+const { tax } = require("probot.io");
+
+tax.calculate(1000);
+/*
+{
+  amount: 1000,
+  tax: 950
+}
+*/
+```
+
+# Get Top 100 by credits & xp
+```js
+client.getTop100XP().then(users => {
+  console.log(users);
+}); //TOP 100 By XP
+
+client.getTopBillionaires().then(users => {
+  console.log(users);
+}); //Top 100 by credits
 ```
