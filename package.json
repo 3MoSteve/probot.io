@@ -1,7 +1,7 @@
 {
   "name": "probot.io",
   "version": "1.0.1",
-  "description": "",
+  "description": "OwO I like Dramex.",
   "main": "index.js",
   "dependencies": {
     "axios": "^0.21.1"
@@ -11,9 +11,22 @@
     "eslint-config-aqua": "^8.0.0"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "keywords": [
+    "probot.io",
+    "probot",
+    "ProBot Dashboard",
+    "ProBot Daily"
+  ],
+  "author": "Steve",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/3MoSteve/probot.io.git"
+  },
+  "bugs": {
+    "url": "https://github.com/3MoSteve/probot.io/issues"
+  },
+  "homepage": "https://github.com/3MoSteve/probot.io#readme"
 }
