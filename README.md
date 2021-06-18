@@ -41,8 +41,8 @@ pro.on("ready", () => { // When the Client is ready.
 
 ```
 
-# Claim The Daily <span style="color: red">Removed</span>
-
+# Claim The Daily
+<span>Removed</span>
 
 # Get all available badges or profile backgrounds
 ```js
